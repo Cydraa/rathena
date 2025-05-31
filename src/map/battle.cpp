@@ -1279,9 +1279,16 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 			else
 				damage = -sce->val2;
 		}
+
+		//Check if the attack is right handed, only right-handed attacks will substract the block count
+		if (d->damage > 0)
+		{
+			--sce->val3;
+		}
+
 		// Pressure usually won't reach this code in pre-renewal and does consequently not remove Kyrie
 		// But it's still coded to do that - this reflects how it is done officially
-		if ((--sce->val3) <= 0 || (sce->val2 <= 0) || skill_id == AL_HOLYLIGHT || skill_id == PA_PRESSURE)
+		if ((sce->val3) <= 0 || (sce->val2 <= 0) || skill_id == AL_HOLYLIGHT || skill_id == PA_PRESSURE)
 			status_change_end(target, SC_KYRIE);
 	}
 
@@ -1428,7 +1435,14 @@ bool battle_status_block_damage(struct block_list *src, struct block_list *targe
 
 			switch (sce->val2) {
 			case MG_SAFETYWALL:
-				if (--group->val2 <= 0) {
+
+				//Check if the attack is right handed, only right-handed attacks will substract the block count
+				if (d->damage > 0)
+				{
+					--group->val2;
+				}
+
+				if (group->val2 <= 0) {
 					skill_delunitgroup(group);
 					break;
 				}
